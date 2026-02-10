@@ -25,6 +25,7 @@ class QRCodeGeneratorApp(QMainWindow):
         self.text_color = '#1f2937'
         self.card_bg = '#ffffff'
         self.wifi_color = '#f59e0b'
+        self.vcard_color = '#06b6d4'
 
         # Variables
         self.qr_image = None
@@ -65,12 +66,14 @@ class QRCodeGeneratorApp(QMainWindow):
         self.mode_selection_screen = self.create_mode_selection_screen()
         self.url_mode_screen = self.create_url_mode_screen()
         self.wifi_mode_screen = self.create_wifi_mode_screen()
+        self.vcard_mode_screen = self.create_vcard_mode_screen()
         self.preview_screen = self.create_preview_screen()
 
         # Add screens to stacked widget
         self.stacked_widget.addWidget(self.mode_selection_screen)
         self.stacked_widget.addWidget(self.url_mode_screen)
         self.stacked_widget.addWidget(self.wifi_mode_screen)
+        self.stacked_widget.addWidget(self.vcard_mode_screen)
         self.stacked_widget.addWidget(self.preview_screen)
 
         # Show mode selection by default
@@ -136,6 +139,29 @@ class QRCodeGeneratorApp(QMainWindow):
         ''')
         wifi_btn.clicked.connect(self.show_wifi_mode)
         layout.addWidget(wifi_btn)
+
+        # vCard Mode Button
+        vcard_btn = QPushButton('👤 vCard Mode')
+        vcard_btn.setFont(QFont('Segoe UI', 16, QFont.Weight.Bold))
+        vcard_btn.setCursor(Qt.CursorShape.PointingHandCursor)
+        vcard_btn.setMinimumHeight(120)
+        vcard_btn.setStyleSheet(f'''
+            QPushButton {{
+                background-color: {self.vcard_color};
+                color: white;
+                border: none;
+                border-radius: 12px;
+                padding: 20px;
+            }}
+            QPushButton:hover {{
+                background-color: #0891b2;
+            }}
+            QPushButton:pressed {{
+                background-color: #0e7490;
+            }}
+        ''')
+        vcard_btn.clicked.connect(self.show_vcard_mode)
+        layout.addWidget(vcard_btn)
 
         layout.addStretch()
 
@@ -377,6 +403,164 @@ class QRCodeGeneratorApp(QMainWindow):
 
         return screen
 
+    def create_vcard_mode_screen(self):
+        '''Create the vCard mode screen'''
+        screen = QWidget()
+        screen.setStyleSheet(f'background-color: {self.bg_color};')
+        layout = QVBoxLayout(screen)
+        layout.setContentsMargins(30, 20, 30, 20)
+        layout.setSpacing(15)
+
+        # Back button
+        back_btn = QPushButton('← Back')
+        back_btn.setFont(QFont('Segoe UI', 11))
+        back_btn.setCursor(Qt.CursorShape.PointingHandCursor)
+        back_btn.setStyleSheet('''
+            QPushButton {
+                background-color: transparent;
+                color: #6b7280;
+                border: none;
+                text-align: left;
+                padding: 5px;
+            }
+            QPushButton:hover {
+                color: #374151;
+            }
+        ''')
+        back_btn.clicked.connect(self.show_mode_selection)
+        layout.addWidget(back_btn)
+
+        # vCard Input card
+        vcard_card = self.create_card()
+        vcard_layout = QVBoxLayout(vcard_card)
+        vcard_layout.setContentsMargins(20, 20, 20, 20)
+        vcard_layout.setSpacing(10)
+
+        # Full Name
+        name_label = QLabel('Full Name *')
+        name_label.setFont(QFont('Segoe UI', 11, QFont.Weight.Bold))
+        name_label.setStyleSheet(f'color: {self.text_color}; margin-top: 5px;')
+        vcard_layout.addWidget(name_label)
+
+        self.vcard_name_entry = QLineEdit()
+        self.vcard_name_entry.setFont(QFont('Segoe UI', 11))
+        self.vcard_name_entry.setPlaceholderText('Enter full name...')
+        self.vcard_name_entry.setMinimumHeight(40)
+        self.vcard_name_entry.setStyleSheet(f'''
+            QLineEdit {{
+                padding: 10px;
+                border: 2px solid #e5e7eb;
+                border-radius: 6px;
+                background-color: white;
+                color: {self.text_color};
+            }}
+            QLineEdit:focus {{
+                border: 2px solid {self.vcard_color};
+            }}
+        ''')
+        vcard_layout.addWidget(self.vcard_name_entry)
+
+        # Phone Number
+        phone_label = QLabel('Phone Number')
+        phone_label.setFont(QFont('Segoe UI', 11, QFont.Weight.Bold))
+        phone_label.setStyleSheet(f'color: {self.text_color}; margin-top: 8px;')
+        vcard_layout.addWidget(phone_label)
+
+        self.vcard_phone_entry = QLineEdit()
+        self.vcard_phone_entry.setFont(QFont('Segoe UI', 11))
+        self.vcard_phone_entry.setPlaceholderText('Enter phone number...')
+        self.vcard_phone_entry.setMinimumHeight(40)
+        self.vcard_phone_entry.setStyleSheet(f'''
+            QLineEdit {{
+                padding: 10px;
+                border: 2px solid #e5e7eb;
+                border-radius: 6px;
+                background-color: white;
+                color: {self.text_color};
+            }}
+            QLineEdit:focus {{
+                border: 2px solid {self.vcard_color};
+            }}
+        ''')
+        vcard_layout.addWidget(self.vcard_phone_entry)
+
+        # Email
+        email_label = QLabel('Email')
+        email_label.setFont(QFont('Segoe UI', 11, QFont.Weight.Bold))
+        email_label.setStyleSheet(f'color: {self.text_color}; margin-top: 8px;')
+        vcard_layout.addWidget(email_label)
+
+        self.vcard_email_entry = QLineEdit()
+        self.vcard_email_entry.setFont(QFont('Segoe UI', 11))
+        self.vcard_email_entry.setPlaceholderText('Enter email address...')
+        self.vcard_email_entry.setMinimumHeight(40)
+        self.vcard_email_entry.setStyleSheet(f'''
+            QLineEdit {{
+                padding: 10px;
+                border: 2px solid #e5e7eb;
+                border-radius: 6px;
+                background-color: white;
+                color: {self.text_color};
+            }}
+            QLineEdit:focus {{
+                border: 2px solid {self.vcard_color};
+            }}
+        ''')
+        vcard_layout.addWidget(self.vcard_email_entry)
+
+        # Organization
+        org_label = QLabel('Organization')
+        org_label.setFont(QFont('Segoe UI', 11, QFont.Weight.Bold))
+        org_label.setStyleSheet(f'color: {self.text_color}; margin-top: 8px;')
+        vcard_layout.addWidget(org_label)
+
+        self.vcard_org_entry = QLineEdit()
+        self.vcard_org_entry.setFont(QFont('Segoe UI', 11))
+        self.vcard_org_entry.setPlaceholderText('Enter organization/company...')
+        self.vcard_org_entry.setMinimumHeight(40)
+        self.vcard_org_entry.setStyleSheet(f'''
+            QLineEdit {{
+                padding: 10px;
+                border: 2px solid #e5e7eb;
+                border-radius: 6px;
+                background-color: white;
+                color: {self.text_color};
+            }}
+            QLineEdit:focus {{
+                border: 2px solid {self.vcard_color};
+            }}
+        ''')
+        vcard_layout.addWidget(self.vcard_org_entry)
+
+        # Preview button
+        vcard_preview_btn = QPushButton('Preview QR Code')
+        vcard_preview_btn.setFont(QFont('Segoe UI', 11, QFont.Weight.Bold))
+        vcard_preview_btn.setCursor(Qt.CursorShape.PointingHandCursor)
+        vcard_preview_btn.setMinimumHeight(45)
+        vcard_preview_btn.setStyleSheet(f'''
+            QPushButton {{
+                background-color: {self.vcard_color};
+                color: white;
+                border: none;
+                border-radius: 6px;
+                padding: 12px;
+                margin-top: 10px;
+            }}
+            QPushButton:hover {{
+                background-color: #0891b2;
+            }}
+            QPushButton:pressed {{
+                background-color: #0e7490;
+            }}
+        ''')
+        vcard_preview_btn.clicked.connect(lambda: self.preview_qr_code('vcard'))
+        vcard_layout.addWidget(vcard_preview_btn)
+
+        layout.addWidget(vcard_card)
+        layout.addStretch()
+
+        return screen
+
     def create_card(self):
         '''Create a card widget with modern styling'''
         card = QFrame()
@@ -499,12 +683,27 @@ class QRCodeGeneratorApp(QMainWindow):
         self.show_password_check.setChecked(False)
         self.qr_image = None
 
+    def show_vcard_mode(self):
+        '''Show the vCard mode screen'''
+        self.stacked_widget.setCurrentWidget(self.vcard_mode_screen)
+        self.title_label.setText('vCard Mode')
+        self.header.setStyleSheet(f'background-color: {self.vcard_color};')
+        self.current_mode = 'vcard'
+        # Reset vCard mode
+        self.vcard_name_entry.clear()
+        self.vcard_phone_entry.clear()
+        self.vcard_email_entry.clear()
+        self.vcard_org_entry.clear()
+        self.qr_image = None
+
     def close_preview(self):
         '''Close preview and return to the mode screen'''
         if self.current_mode == 'url':
             self.show_url_mode()
         elif self.current_mode == 'wifi':
             self.show_wifi_mode()
+        elif self.current_mode == 'vcard':
+            self.show_vcard_mode()
         else:
             self.show_mode_selection()
 
@@ -555,6 +754,36 @@ class QRCodeGeneratorApp(QMainWindow):
 
             preview_title = 'WiFi QR Code'
 
+        elif mode == 'vcard':
+            name = self.vcard_name_entry.text().strip()
+            phone = self.vcard_phone_entry.text().strip()
+            email = self.vcard_email_entry.text().strip()
+            org = self.vcard_org_entry.text().strip()
+
+            if not name:
+                QMessageBox.warning(self, 'Warning', 'Please enter at least a name for the vCard!')
+                return
+
+            # Create vCard QR code data in vCard 3.0 format
+            # Format: BEGIN:VCARD\nVERSION:3.0\nFN:Full Name\nTEL:Phone\nEMAIL:Email\nORG:Organization\nEND:VCARD
+            vcard_data = 'BEGIN:VCARD\n'
+            vcard_data += 'VERSION:3.0\n'
+            vcard_data += f'FN:{name}\n'
+
+            if phone:
+                vcard_data += f'TEL:{phone}\n'
+
+            if email:
+                vcard_data += f'EMAIL:{email}\n'
+
+            if org:
+                vcard_data += f'ORG:{org}\n'
+
+            vcard_data += 'END:VCARD'
+
+            data = vcard_data
+            preview_title = 'vCard QR Code'
+
         else:
             return
 
@@ -599,8 +828,10 @@ class QRCodeGeneratorApp(QMainWindow):
             # Set header color based on mode
             if mode == 'url':
                 self.header.setStyleSheet(f'background-color: {self.primary_color};')
-            else:
+            elif mode == 'wifi':
                 self.header.setStyleSheet(f'background-color: {self.wifi_color};')
+            elif mode == 'vcard':
+                self.header.setStyleSheet(f'background-color: {self.vcard_color};')
 
         except Exception as e:
             QMessageBox.critical(self, 'Error', f'Failed to generate QR code: {str(e)}')
